@@ -59,7 +59,7 @@ function generateDropdown(component, container){
 	e05.className = 'collapse';
 	e05.id = 'collapse_' + component.fields.name;
 	e05.setAttribute('aria-labelledby', 'heading_' + component.fields.name);
-	e05.setAttribute('data-parent', '#accordionExample');
+	e05.setAttribute('data-parent', '#dropdownContainer');
 	e01.appendChild(e05);
 
 	var e06 = document.createElement('div');
@@ -152,8 +152,9 @@ function generateDropdown(component, container){
 
 	e06.appendChild(document.createElement('br'));
 
-	var e20 = document.createElement('a');
-	e20.href = '#top';
+	var e20 = document.createElement('div');
+	e20.onclick = toTop;
+	e20.style = 'border:1px solid black; padding:4px; cursor:pointer; width:100px; text-align:center; color:black'
 	e20.textContent += 'Back to Top';
 	e06.appendChild(e20);
 }
@@ -161,57 +162,82 @@ function generateDropdown(component, container){
 
 function createHeader(main){
 
-	var e01 = document.createElement('a');
-	e01.id = 'top';
-	main.appendChild(e01);
+	var header = document.createElement('div');
+	header.id = 'headerInfo'
+	main.appendChild(header);
+
+	// var e01 = document.createElement('a');
+	// e01.id = 'top';
+	// header.appendChild(e01);
 
 	var e02 = document.createElement('h1');
 	e02.textContent += 'Software on Quest';
-	main.appendChild(e02);
+	header.appendChild(e02);
 
 	var e03 = document.createElement('p');
 	e03.innerHTML = 'This list is subject to change, and additional software not listed here may be available. For the complete list, run the command, <span class="command">module available</span>. Except where noted, Modules Software Environment Manager must be used to set up your environment to use the Quest software.'
-	main.appendChild(e03);
+	header.appendChild(e03);
 
 	var e04 = document.createElement('a');
 	e04.id = 'quest';
 	e04.name = 'quest';
-	main.appendChild(e04);
+	header.appendChild(e04);
 
-	var e05 = document.createElement('strong');
-	e05.textContent += 'Quest Software and Applications';
-	main.appendChild(e05);
-
-	main.appendChild(document.createElement('br'));
-	main.appendChild(document.createElement('br'));
+	header.appendChild(document.createElement('br'));
+	header.appendChild(document.createElement('br'));
 
 }
 
-function createDropdownContainer(main){
+function createContainers(main){
 
+
+	var outside = document.createElement('div');
+	outside.id = 'outsideContainer'
+	main.appendChild(outside);
 
 	var e01 = document.createElement('div');
 	e01.className = 'container-fluid';
-	main.appendChild(e01);
+	outside.appendChild(e01);
+
 
 	var e02 = document.createElement('div');
 	e02.className = 'row';
 	e01.appendChild(e02);
 
 	var e03 = document.createElement('div');
-	e03.className = 'col-sm-1';
+	e03.className = 'col-sm-4';
+	e03.id = 'filtersContainer';
+	e03.style = 'height: 500px; overflow-y: auto';
 	e02.appendChild(e03);
 
-	var e04 = document.createElement('div');
-	e04.className = 'col-sm-9';
-	e02.appendChild(e04);
+	var e04 = document.createElement('strong');
+	e04.textContent += 'Filters';
+	e03.appendChild(e04);
+
+	e03.appendChild(document.createElement('br'));
+	e03.appendChild(document.createElement('br'));
 
 	var e05 = document.createElement('div');
-	e05.className = 'accordion';
-	e05.id = 'accordionExample';
-	e04.appendChild(e05);
+	e05.className = 'col-sm-8';
+	e05.style.height = '30px';
+	e02.appendChild(e05);
 
-	return e05;
+	var e06 = document.createElement('strong');
+	e06.textContent += 'Quest Software and Applications';
+	e05.appendChild(e06);
+
+	e05.appendChild(document.createElement('br'));
+	e05.appendChild(document.createElement('br'));
+
+	var e07 = document.createElement('div');
+	e07.className = 'accordion';
+	e07.id = 'dropdownContainer';
+	e07.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
+
+	e05.appendChild(e07);
+
+
+	return {'filters':e03, 'dropdowns':e07};
 
 }
 
@@ -226,13 +252,37 @@ function createPage(data){
 	createHeader(main);
 
 	// create the container for the dropdowns
-	var container = createDropdownContainer(main);
+	var containers = createContainers(main);
 
 	// create all the dropdowns
 	data.forEach(function(d){
-		generateDropdown(d, container);	
+		generateDropdown(d, containers.dropdowns);	
 	})
+
+	resize()
+}
+
+function resize(){
+	//get the available height and rescale the containers
+	var headBbox = document.getElementById('headerInfo').getBoundingClientRect();
+	var h = window.innerHeight - headBbox.height - 70;
+
+	var filters = document.getElementById('filtersContainer');
+	filters.style.height = h;
+
+	var dropdowns = document.getElementById('dropdownContainer');
+	dropdowns.style.height = h;
+
+}
+
+function toTop(){
+	//scroll to the top
+	var dropdowns = document.getElementById('dropdownContainer');
+	dropdowns.scrollTop = 0;
+
 }
 
 // call the function (on page load)		
 readJSONFromURL('https://scottcoughlin2014.github.io/quest-software-documentation/module.json', createPage)
+
+window.addEventListener('resize', resize);
