@@ -76,18 +76,23 @@ function generateDropdown(component, container){
 	e08.textContent += 'Tags:';
 	e06.appendChild(e08);
 
-	var e09 = document.createElement('nav');
-	e09.className = 'navbar navbar-light justify-content-start';
+	var e09 = document.createElement('b');
 	e06.appendChild(e09);
 
-	tags.forEach(function(d){
-		var e10 = document.createElement('a');
-		e10.className = 'nav-link justify-content-start';
-		e10.href = '#';
-		e10.setAttribute('onclick', "toggler('" + d + "')");
+	var e10 = document.createElement('p');
+	tags.forEach(function(d, i){
 		e10.textContent += d;
-		e09.append(e10);
+		e10.className = 'moduleText'
+		if (i < tags.length - 1) e10.textContent += ', '
+		// var e10 = document.createElement('a');
+		// e10.className = 'nav-link justify-content-start';
+		// e10.href = '#';
+		// e10.setAttribute('onclick', "toggler('" + d + "')");
+		// e10.textContent += d;
+		// e09.append(e10);
+
 	});
+	e06.appendChild(e10);
 
 	e06.appendChild(document.createElement('br'));
 
@@ -96,8 +101,8 @@ function generateDropdown(component, container){
 	e06.appendChild(e11);
 
 	component.fields.versions.forEach(function(d){
-		var e17 = document.createElement('pre');
-		e17.className = 'code';
+		var e17 = document.createElement('div');
+		e17.className = 'code moduleText';
 		e17.textContent += d;
 		e06.appendChild(e17);
 	});
@@ -108,8 +113,8 @@ function generateDropdown(component, container){
 	e12.textContent += 'Preferred Version:';
 	e06.appendChild(e12);
 
-	var e13 = document.createElement('pre');
-	e13.className = 'code';
+	var e13 = document.createElement('div');
+	e13.className = 'code moduleText';
 	e13.textContent += component.fields.preferred;
 	e06.appendChild(e13);
 
@@ -119,7 +124,8 @@ function generateDropdown(component, container){
 	e14.textContent += 'About:';
 	e06.appendChild(e14);
 
-	var e15 = document.createElement('p');
+	var e15 = document.createElement('div');
+	e15.className = 'moduleText'
 	e15.textContent += component.fields.whatis;
 	e06.appendChild(e15);
 
@@ -130,6 +136,7 @@ function generateDropdown(component, container){
 	e06.appendChild(e16);
 
 	var e17 = document.createElement('p');
+	e17.className = 'moduleText'
 	e17.textContent += component.fields.help_info;
 	e06.appendChild(e17);
 

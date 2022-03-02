@@ -45,3 +45,9 @@ html, body {
 .active:after {
 	content: "\2796"; /* Unicode character for "minus" sign (-) */
 }
+
+.moduleText{
+	font-size: 0.85rem;
+	line-height: 1.3rem;
+	color: black;
+}
