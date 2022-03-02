@@ -17,20 +17,20 @@ function readJSONFromURL(url, callback){
 function generateDropdown(component, container){
 	// create a dropdown following the format that Scotty used (but generated in javascript)
 
-	// first, get the keywords
-	var keywords = [];
+	// first, get the tags
+	var tags = [];
 	component.fields.primary_keywords.forEach(function(d){
-		keywords.push(d);
+		tags.push(d);
 	})
 	component.fields.secondary_keywords.forEach(function(d){
-		keywords.push(d);
+		tags.push(d);
 	})
 
 
 
 	var e01 = document.createElement('div');
 	var className = 'card';
-	keywords.forEach(function(d){
+	tags.forEach(function(d){
 		className += ' ' + d;
 	})
 	e01.className = className;
@@ -80,7 +80,7 @@ function generateDropdown(component, container){
 	e09.className = 'navbar navbar-light justify-content-start';
 	e06.appendChild(e09);
 
-	keywords.forEach(function(d){
+	tags.forEach(function(d){
 		var e10 = document.createElement('a');
 		e10.className = 'nav-link justify-content-start';
 		e10.href = '#';
@@ -159,6 +159,71 @@ function generateDropdown(component, container){
 	e06.appendChild(e20);
 }
 
+function generateTagFilters(data, container){
+	// first, get all the tags
+	var tags = [];
+	data.forEach(function(d){
+		d.fields.primary_keywords.forEach(function(d){
+			if (!tags.includes(d)) tags.push(d);
+		})
+		d.fields.secondary_keywords.forEach(function(d){
+			if (!tags.includes(d)) tags.push(d);
+		})
+	})
+
+	console.log(tags);
+
+	var e01 = document.createElement('div');
+	e01.className = 'pos-f-t';
+	container.appendChild(e01);
+
+	var e02 = document.createElement('nav');
+	e02.className = 'navbar navbar-light bg-light';
+	e01.appendChild(e02);
+
+	var e03 = document.createElement('button');
+	e03.className = 'navbar-toggler';
+	e03.type = 'button';
+	e03.setAttribute('data-toggle', 'collapse');
+	e03.setAttribute('data-target', '#filterByTags');
+	e03.setAttribute('aria-expanded', 'false');
+	e03.setAttribute('aria-controls', 'filterByTags');
+	e03.innerHTML = '<span class="navbar-toggler-icon"></span> Filter by Tag'
+	e02.appendChild(e03);
+
+	var e05 = document.createElement('div');
+	e05.className = 'collapse';
+	e05.id = 'filterByTags';
+	e01.appendChild(e05);
+
+	var e06 = document.createElement('div');
+	e06.className = 'bg-light p-4';
+	e05.appendChild(e06);	
+
+	var e07 = document.createElement('nav');
+	e07.className = 'navbar navbar-light bg-light';
+	e06.appendChild(e07);
+
+	tags.forEach(function(d){
+		var div = document.createElement('div');
+		div.style.width = '100%'
+		var checkbox = document.createElement('input');
+		checkbox.type = 'checkbox';
+		checkbox.checked = 'checked';
+		checkbox.name = d;
+		checkbox.value = d;
+		checkbox.id = d.replace(/\s/g, '');
+
+		var label = document.createElement('label')
+		label.style.paddingLeft = '4px';
+		label.htmlFor = d.replace(/\s/g, '');
+		label.appendChild(document.createTextNode(d));
+
+		div.appendChild(checkbox);
+		div.appendChild(label);
+		e07.appendChild(div)
+	})
+}
 
 function createHeader(main){
 
@@ -204,40 +269,47 @@ function createContainers(main){
 	e02.className = 'row';
 	e01.appendChild(e02);
 
+
+	// filters
 	var e03 = document.createElement('div');
 	e03.className = 'col-sm-4';
-	e03.id = 'filtersContainer';
-	e03.style = 'height: 500px; overflow-y: auto';
 	e02.appendChild(e03);
 
 	var e04 = document.createElement('strong');
 	e04.textContent += 'Filters';
+	e04.style.height = '30px';
 	e03.appendChild(e04);
 
 	e03.appendChild(document.createElement('br'));
 	e03.appendChild(document.createElement('br'));
 
 	var e05 = document.createElement('div');
-	e05.className = 'col-sm-8';
-	e05.style.height = '30px';
-	e02.appendChild(e05);
-
-	var e06 = document.createElement('strong');
-	e06.textContent += 'Quest Software and Applications';
-	e05.appendChild(e06);
-
-	e05.appendChild(document.createElement('br'));
-	e05.appendChild(document.createElement('br'));
-
-	var e07 = document.createElement('div');
-	e07.className = 'accordion';
-	e07.id = 'dropdownContainer';
-	e07.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
-
-	e05.appendChild(e07);
+	e05.id = 'filtersContainer';
+	e05.style = 'height: 500px; overflow-y: auto';
+	e03.appendChild(e05);
 
 
-	return {'filters':e03, 'dropdowns':e07};
+	// modules
+	var e06 = document.createElement('div');
+	e06.className = 'col-sm-8';
+	e02.appendChild(e06);
+
+	var e07 = document.createElement('strong');
+	e07.style.height = '30px';
+	e07.textContent += 'Quest Software and Applications';
+	e06.appendChild(e07);
+
+	e06.appendChild(document.createElement('br'));
+	e06.appendChild(document.createElement('br'));
+
+	var e08 = document.createElement('div');
+	e08.className = 'accordion';
+	e08.id = 'dropdownContainer';
+	e08.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
+
+	e06.appendChild(e08);
+
+	return {'filters':e05, 'modules':e08};
 
 }
 
@@ -256,10 +328,13 @@ function createPage(data){
 
 	// create all the dropdowns
 	data.forEach(function(d){
-		generateDropdown(d, containers.dropdowns);	
+		generateDropdown(d, containers.modules);	
 	})
 
-	resize()
+	//create the filters
+	generateTagFilters(data, containers.filters)
+	
+	resize();
 }
 
 function resize(){
