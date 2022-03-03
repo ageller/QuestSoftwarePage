@@ -207,9 +207,39 @@ function generateTagFilters(data, container){
 	e06.className = 'bg-light p-4';
 	e05.appendChild(e06);	
 
-	var e07 = document.createElement('nav');
-	e07.className = 'navbar navbar-light bg-light';
-	e06.appendChild(e07);
+	var tagContainer = document.createElement('nav');
+	tagContainer.className = 'navbar navbar-light bg-light';
+	e06.appendChild(tagContainer);
+
+	var div = document.createElement('div');
+	div.style = 'margin-bottom: 6px'
+	var fill = document.createElement('div');
+	fill.id = 'clearAllFilters'
+	fill.style = 'border:1px solid black; padding:4px; margin:2px; cursor:pointer; text-align:center; color:black; float:left'
+	fill.textContent += 'Check All';
+	fill.onclick = function(){
+		checkboxes = document.getElementsByClassName('TagCheckbox');
+		console.log(checkboxes)
+		for(var i = 0, n = checkboxes.length; i<n; i++) {
+			checkboxes[i].checked = true;
+		}
+	}
+	div.appendChild(fill);
+
+	var clear = document.createElement('div');
+	clear.id = 'clearAllFilters'
+	clear.style = 'border:1px solid black; padding:4px; margin:2px; cursor:pointer; text-align:center; color:black; float:left'
+	clear.textContent += 'Uncheck All';
+	clear.onclick = function(){
+		checkboxes = document.getElementsByClassName('TagCheckbox');
+		console.log(checkboxes)
+		for(var i = 0, n = checkboxes.length; i<n; i++) {
+			checkboxes[i].checked = false;
+		}
+	}
+	div.appendChild(clear);
+
+	tagContainer.append(div);
 
 	tags.forEach(function(d){
 		var div = document.createElement('div');
@@ -220,6 +250,7 @@ function generateTagFilters(data, container){
 		checkbox.name = d;
 		checkbox.value = d;
 		checkbox.id = d.replace(/\s/g, '');
+		checkbox.className = 'TagCheckbox'
 
 		var label = document.createElement('label')
 		label.style.paddingLeft = '4px';
@@ -228,7 +259,7 @@ function generateTagFilters(data, container){
 
 		div.appendChild(checkbox);
 		div.appendChild(label);
-		e07.appendChild(div)
+		tagContainer.appendChild(div)
 	})
 }
 
@@ -247,7 +278,7 @@ function createHeader(main){
 	header.appendChild(e02);
 
 	var e03 = document.createElement('p');
-	e03.innerHTML = 'This list is subject to change, and additional software not listed here may be available. For the complete list, run the command, <span class="command">module available</span>. Except where noted, Modules Software Environment Manager must be used to set up your environment to use the Quest software.'
+	e03.innerHTML = 'This list is subject to change, and additional software not listed here may be available. For the complete list, run the command, <span class="command">module available</span>. Except where noted, Modules Software Environment Manager must be used to set up your environment to use the Quest software. <br><br> ADD SOME EXPLANATION ABOUT WHAT IS SHOWN BELOW'
 	header.appendChild(e03);
 
 	var e04 = document.createElement('a');
@@ -338,7 +369,13 @@ function createPage(data){
 		generateDropdown(d, containers.modules);	
 	})
 
-	//create the filters
+	// should I have an extra div that has some notification of the active filter parameters?
+
+	// add a clear filters button
+
+	// create a search bar for names
+
+	// create the filters
 	generateTagFilters(data, containers.filters)
 	
 	resize();
