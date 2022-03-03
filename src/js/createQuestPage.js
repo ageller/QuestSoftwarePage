@@ -479,6 +479,8 @@ function showAllCards(){
 	for(var i = 0; i < cards.length; i ++) {
 		cards[i].classList.remove('hidden');
 	}
+
+	applyNameSearch();
 }
 
 function hideAllCards(){
@@ -509,11 +511,13 @@ function applyNameSearch(){
 	var search = document.getElementById('searchByName');
 	var value = search.value;
 
-	// modify the cards
-	var cards = document.getElementsByClassName('card');
-	for(var i = 0; i < cards.length; i ++) {
-		var snip = cards[i].id.replace(/[^0-9a-z]/gi, '').toLowerCase().substring(0,value.length);
-		if (snip != value) cards[i].classList.add('hidden')
+	if (value.length > 0){
+		// modify the cards
+		var cards = document.getElementsByClassName('card');
+		for(var i = 0; i < cards.length; i ++) {
+			var snip = cards[i].id.replace(/[^0-9a-z]/gi, '').toLowerCase().substring(0,value.length);
+			if (snip != value) cards[i].classList.add('hidden')
+		}
 	}
 }
 
