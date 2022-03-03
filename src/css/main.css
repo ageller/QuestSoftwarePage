@@ -56,6 +56,13 @@ html, body {
 	font-family:  SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
 	color:  black;
 }
+
 .hidden{
 	display: none;
+}
+
+.labelFont{
+	padding-left: 4px;
+	color:  #4e2a84;
+	font:  1rem "Akkurat Pro Regular",sans-serif;
 }
