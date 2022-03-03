@@ -13,7 +13,9 @@ function readJSONFromURL(url, callback){
 	xhr.send();	
 }
 
-
+//////////////////////////////////////////////////////
+// generating DOM elements
+//////////////////////////////////////////////////////
 function generateDropdown(component, container){
 	// create a dropdown following the format that Scotty used (but generated in javascript)
 
@@ -34,6 +36,7 @@ function generateDropdown(component, container){
 		className += ' ' + d.replace(/\s/g, '');
 	})
 	e01.className = className;
+	e01.id = component.fields.name.replace(/\s/g, '');
 	container.appendChild(e01);
 
 	var e02 = document.createElement('div');
@@ -166,6 +169,38 @@ function generateDropdown(component, container){
 	e06.appendChild(e20);
 }
 
+function generateSearchBar(container){
+	var e01 = document.createElement('div');
+	e01.className = 'pos-f-t';
+	container.appendChild(e01);
+
+	var e02 = document.createElement('nav');
+	e02.className = 'navbar navbar-light bg-light';
+	e01.appendChild(e02);
+
+	var div = document.createElement('div')
+	//div.style = 'border: 1px solid rgba(0,0,0, 0.2); border-radius: 0.25rem; padding: 0.25rem 0.75rem';
+	div.style = 'cursor:default';
+	div.className = 'navbar-toggler';
+
+	var label = document.createElement('label')
+	label.style = 'color:rgba(0,0,0, 0.5); font-size:1.25rem';
+	label.htmlFor = 'searchByName';
+	label.appendChild(document.createTextNode('Search software by name'));
+
+	var input = document.createElement('input');
+	input.type = 'text';
+	input.placeholder = 'Enter software name';
+	input.name = 'searchByName';
+	input.id = 'searchByName';
+	input.addEventListener('input', applyAllFilters);
+	input.addEventListener('propertychange', applyAllFilters);
+
+	div.appendChild(label);
+	div.appendChild(input);
+	e02.appendChild(div);
+}
+
 function generateTagFilters(data, container){
 	// first, get all the tags
 	var tags = [];
@@ -191,13 +226,13 @@ function generateTagFilters(data, container){
 	e03.type = 'button';
 	e03.setAttribute('data-toggle', 'collapse');
 	e03.setAttribute('data-target', '#filterByTags');
-	e03.setAttribute('aria-expanded', 'false');
+	e03.setAttribute('aria-expanded', 'true');
 	e03.setAttribute('aria-controls', 'filterByTags');
 	e03.innerHTML = '<span class="navbar-toggler-icon"></span> Filter by Tag'
 	e02.appendChild(e03);
 
 	var e05 = document.createElement('div');
-	e05.className = 'collapse';
+	e05.className = 'collapse show';
 	e05.id = 'filterByTags';
 	e01.appendChild(e05);
 
@@ -249,7 +284,7 @@ function generateTagFilters(data, container){
 		checkbox.value = d.replace(/\s/g, '');
 		checkbox.id = d.replace(/\s/g, '');
 		checkbox.className = 'TagCheckbox'
-		checkbox.onchange = applyTagFilters;
+		checkbox.onchange = applyAllFilters;
 		
 		var label = document.createElement('label')
 		label.style.paddingLeft = '4px';
@@ -292,7 +327,6 @@ function createHeader(main){
 
 function createContainers(main){
 
-
 	var outside = document.createElement('div');
 	outside.id = 'outsideContainer'
 	main.appendChild(outside);
@@ -321,35 +355,43 @@ function createContainers(main){
 	e03.appendChild(document.createElement('br'));
 
 	var e05 = document.createElement('div');
-	e05.id = 'filtersContainer';
-	e05.style = 'height: 500px; overflow-y: auto';
+	e05.id = 'searchContainer';
+	e05.style = 'margin-bottom: 10px;';
 	e03.appendChild(e05);
+
+	var e06 = document.createElement('div');
+	e06.id = 'tagFiltersContainer';
+	e06.style = 'height: 500px; overflow-y: auto';
+	e03.appendChild(e06);
 
 
 	// modules
-	var e06 = document.createElement('div');
-	e06.className = 'col-sm-8';
-	e02.appendChild(e06);
+	var e07 = document.createElement('div');
+	e07.className = 'col-sm-8';
+	e02.appendChild(e07);
 
-	var e07 = document.createElement('strong');
-	e07.style.height = '30px';
-	e07.textContent += 'Quest Software and Applications';
-	e06.appendChild(e07);
+	var e08 = document.createElement('strong');
+	e08.style.height = '30px';
+	e08.textContent += 'Quest Software and Applications';
+	e07.appendChild(e08);
 
-	e06.appendChild(document.createElement('br'));
-	e06.appendChild(document.createElement('br'));
+	e07.appendChild(document.createElement('br'));
+	e07.appendChild(document.createElement('br'));
 
-	var e08 = document.createElement('div');
-	e08.className = 'accordion';
-	e08.id = 'dropdownContainer';
-	e08.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
+	var e09 = document.createElement('div');
+	e09.className = 'accordion';
+	e09.id = 'dropdownContainer';
+	e09.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
 
-	e06.appendChild(e08);
+	e07.appendChild(e09);
 
-	return {'filters':e05, 'modules':e08};
+	return {'filters':e05, 'tagFilters':e06, 'modules':e09};
 
 }
 
+//////////////////////////////////////////////////////
+// call all the DOM generators
+//////////////////////////////////////////////////////
 function createPage(data){
 	console.log(data);
 
@@ -373,33 +415,18 @@ function createPage(data){
 	// add a clear filters button
 
 	// create a search bar for names
+	generateSearchBar(containers.filters);
 
 	// create the filters
-	generateTagFilters(data, containers.filters)
+	generateTagFilters(data, containers.tagFilters)
 	
 	resize();
 }
 
-function resize(){
-	//get the available height and rescale the containers
-	var headBbox = document.getElementById('headerInfo').getBoundingClientRect();
-	var h = window.innerHeight - headBbox.height - 70;
 
-	var filters = document.getElementById('filtersContainer');
-	filters.style.height = h;
-
-	var dropdowns = document.getElementById('dropdownContainer');
-	dropdowns.style.height = h;
-
-}
-
-function toTop(){
-	//scroll to the top
-	var dropdowns = document.getElementById('dropdownContainer');
-	dropdowns.scrollTop = 0;
-
-}
-
+//////////////////////////////////////////////////////
+// for filtering
+//////////////////////////////////////////////////////
 function showAllTags(){
 	var cards = document.getElementsByClassName('card');
 	for(var i = 0; i < cards.length; i ++) {
@@ -415,7 +442,7 @@ function hideAllTags(){
 }
 
 function applyTagFilters(){
-	// show everything first
+	// hide everything first
 	hideAllTags()
 
 	// then hide only those without the checkbox
@@ -428,9 +455,52 @@ function applyTagFilters(){
 			}
 		}
 	}
+}
+
+function applyNameSearch(){
+	// get the text box entry
+	var search = document.getElementById('searchByName');
+	var value = search.value;
+
+	// modify the cards
+	var cards = document.getElementsByClassName('card');
+	for(var i = 0; i < cards.length; i ++) {
+		var snip = cards[i].id.replace(/[^0-9a-z]/gi, '').toLowerCase().substring(0,value.length);
+		if (snip != value) cards[i].classList.add('hidden')
+	}
+}
+
+function applyAllFilters(){
+	applyTagFilters();
+	applyNameSearch();
+}
+
+//////////////////////////////////////////////////////
+// misc
+//////////////////////////////////////////////////////
+function resize(){
+	//get the available height and rescale the containers
+
+	var filters = document.getElementById('tagFiltersContainer');
+	var filtersBbox = filters.getBoundingClientRect();
+	filters.style.height = window.innerHeight - filtersBbox.top - 20;
+
+	var dropdowns = document.getElementById('dropdownContainer');
+	var dropdownsBbox = dropdowns.getBoundingClientRect();
+	dropdowns.style.height = window.innerHeight - dropdownsBbox.top - 20;
 
 }
-// call the function (on page load)		
+
+function toTop(){
+	//scroll to the top
+	var dropdowns = document.getElementById('dropdownContainer');
+	dropdowns.scrollTop = 0;
+
+}
+
+//////////////////////////////////////////////////////
+// runs on page load	
+//////////////////////////////////////////////////////
 readJSONFromURL('https://scottcoughlin2014.github.io/quest-software-documentation/module.json', createPage)
 
 window.addEventListener('resize', resize);
