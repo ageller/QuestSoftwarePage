@@ -169,6 +169,25 @@ function generateDropdown(component, container){
 	e06.appendChild(e20);
 }
 
+function generateClearFiltersBar(container){
+	var e01 = document.createElement('div');
+	e01.className = 'pos-f-t';
+	container.appendChild(e01);
+
+	var e02 = document.createElement('nav');
+	e02.className = 'navbar navbar-light bg-light';
+	e01.appendChild(e02);
+
+	var div = document.createElement('div')
+	//div.style = 'border: 1px solid rgba(0,0,0, 0.2); border-radius: 0.25rem; padding: 0.25rem 0.75rem';
+	div.className = 'navbar-toggler';
+	div.style.width = '100%'
+	div.textContent += 'Clear All Filters'
+	div.onclick = clearAllFilters;
+
+	e02.appendChild(div);
+}
+
 function generateSearchBar(container){
 	var e01 = document.createElement('div');
 	e01.className = 'pos-f-t';
@@ -229,6 +248,8 @@ function generateTagFilters(data, container){
 	e03.setAttribute('aria-expanded', 'true');
 	e03.setAttribute('aria-controls', 'filterByTags');
 	e03.innerHTML = '<span class="navbar-toggler-icon"></span> Filter by Tag'
+	e03.style.width = '100%'
+	e03.style.textAlign = 'left'
 	e02.appendChild(e03);
 
 	var e05 = document.createElement('div');
@@ -251,11 +272,8 @@ function generateTagFilters(data, container){
 	fill.style = 'border:1px solid black; padding:4px; margin:2px; cursor:pointer; text-align:center; color:black; float:left'
 	fill.textContent += 'Check All';
 	fill.onclick = function(){
-		showAllTags();
-		var checkboxes = document.getElementsByClassName('TagCheckbox');
-		for(var i = 0; i < checkboxes.length; i ++) {
-			checkboxes[i].checked = true;
-		}
+		checkAllBoxes();
+		showAllCards();
 	}
 	div.appendChild(fill);
 
@@ -264,11 +282,9 @@ function generateTagFilters(data, container){
 	clear.style = 'border:1px solid black; padding:4px; margin:2px; cursor:pointer; text-align:center; color:black; float:left'
 	clear.textContent += 'Uncheck All';
 	clear.onclick = function(){
-		hideAllTags();
-		var checkboxes = document.getElementsByClassName('TagCheckbox');
-		for(var i = 0; i < checkboxes.length; i ++) {
-			checkboxes[i].checked = false;
-		}
+		uncheckAllBoxes();
+		hideAllCards();
+
 	}
 	div.appendChild(clear);
 
@@ -312,7 +328,7 @@ function createHeader(main){
 	header.appendChild(e02);
 
 	var e03 = document.createElement('p');
-	e03.innerHTML = 'This list is subject to change, and additional software not listed here may be available. For the complete list, run the command, <span class="command">module available</span>. Except where noted, Modules Software Environment Manager must be used to set up your environment to use the Quest software. <br><br> ADD SOME EXPLANATION ABOUT WHAT IS SHOWN BELOW'
+	e03.innerHTML = 'Below is a list of current software available on Quest.  On the left are various options filtering the list.  The software and applications shown on the right will be modified based on the selected filters.  Click on any of the items in the software and applications list to expand a dropdown and view more details.  <br><br> Please note that this Quest software and applications list is subject to change, and additional software not listed here may be available. For the complete list, please log into Quest and run the command, <span class="command">module available</span>. Except where noted, the "Modules Software Environment Manager" must be used to set up your environment to use the Quest software. '
 	header.appendChild(e03);
 
 	var e04 = document.createElement('a');
@@ -355,37 +371,42 @@ function createContainers(main){
 	e03.appendChild(document.createElement('br'));
 
 	var e05 = document.createElement('div');
-	e05.id = 'searchContainer';
-	e05.style = 'margin-bottom: 10px;';
+	e05.id = 'clearFilterContainer';
+	e05.style.marginBottom = '10px';
 	e03.appendChild(e05);
 
 	var e06 = document.createElement('div');
-	e06.id = 'tagFiltersContainer';
-	e06.style = 'height: 500px; overflow-y: auto';
+	e06.id = 'searchContainer';
+	e06.style.marginBottom = '10px';
 	e03.appendChild(e06);
+
+	var e07 = document.createElement('div');
+	e07.id = 'tagFiltersContainer';
+	e07.style = 'height: 500px; overflow-y: auto';
+	e03.appendChild(e07);
 
 
 	// modules
-	var e07 = document.createElement('div');
-	e07.className = 'col-sm-8';
-	e02.appendChild(e07);
+	var e08 = document.createElement('div');
+	e08.className = 'col-sm-8';
+	e02.appendChild(e08);
 
-	var e08 = document.createElement('strong');
-	e08.style.height = '30px';
-	e08.textContent += 'Quest Software and Applications';
-	e07.appendChild(e08);
+	var e09 = document.createElement('strong');
+	e09.style.height = '30px';
+	e09.textContent += 'Quest Software and Applications';
+	e08.appendChild(e09);
 
-	e07.appendChild(document.createElement('br'));
-	e07.appendChild(document.createElement('br'));
+	e08.appendChild(document.createElement('br'));
+	e08.appendChild(document.createElement('br'));
 
-	var e09 = document.createElement('div');
-	e09.className = 'accordion';
-	e09.id = 'dropdownContainer';
-	e09.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
+	var e10 = document.createElement('div');
+	e10.className = 'accordion';
+	e10.id = 'dropdownContainer';
+	e10.style = 'height: 500px; overflow-y: auto; scroll-behavior: smooth';
 
-	e07.appendChild(e09);
+	e08.appendChild(e10);
 
-	return {'filters':e05, 'tagFilters':e06, 'modules':e09};
+	return {'clearFilters':e05, 'search':e06, 'tagFilters':e07, 'modules':e10};
 
 }
 
@@ -413,9 +434,10 @@ function createPage(data){
 	// should I have an extra div that has some notification of the active filter parameters?
 
 	// add a clear filters button
+	generateClearFiltersBar(containers.clearFilters);
 
 	// create a search bar for names
-	generateSearchBar(containers.filters);
+	generateSearchBar(containers.search);
 
 	// create the filters
 	generateTagFilters(data, containers.tagFilters)
@@ -427,14 +449,39 @@ function createPage(data){
 //////////////////////////////////////////////////////
 // for filtering
 //////////////////////////////////////////////////////
-function showAllTags(){
+function clearAllFilters(){
+	// clear the search box
+	document.getElementById('searchByName').value = '';
+
+	// check all the boxes
+	checkAllBoxes();
+
+	// show all cards
+	showAllCards();
+}
+
+function checkAllBoxes(){
+	var checkboxes = document.getElementsByClassName('TagCheckbox');
+	for(var i = 0; i < checkboxes.length; i ++) {
+		checkboxes[i].checked = true;
+	}
+}
+
+function uncheckAllBoxes(){
+	var checkboxes = document.getElementsByClassName('TagCheckbox');
+	for(var i = 0; i < checkboxes.length; i ++) {
+		checkboxes[i].checked = false;
+	}
+}
+
+function showAllCards(){
 	var cards = document.getElementsByClassName('card');
 	for(var i = 0; i < cards.length; i ++) {
 		cards[i].classList.remove('hidden');
 	}
 }
 
-function hideAllTags(){
+function hideAllCards(){
 	var cards = document.getElementsByClassName('card');
 	for(var i = 0; i < cards.length; i ++) {
 		cards[i].classList.add('hidden');
@@ -443,7 +490,7 @@ function hideAllTags(){
 
 function applyTagFilters(){
 	// hide everything first
-	hideAllTags()
+	hideAllCards()
 
 	// then hide only those without the checkbox
 	var checkboxes = document.getElementsByClassName('TagCheckbox');

@@ -52,6 +52,10 @@ html, body {
 	color: black;
 }
 
+.command {
+	font-family:  SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+	color:  black;
+}
 .hidden{
 	display: none;
 }
