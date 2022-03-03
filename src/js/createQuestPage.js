@@ -29,9 +29,9 @@ function generateDropdown(component, container){
 
 
 	var e01 = document.createElement('div');
-	var className = 'card';
+	var className = 'card ' + component.fields.name.replace(/\s/g, '');
 	tags.forEach(function(d){
-		className += ' ' + d;
+		className += ' ' + d.replace(/\s/g, '');
 	})
 	e01.className = className;
 	container.appendChild(e01);
@@ -178,8 +178,6 @@ function generateTagFilters(data, container){
 		})
 	})
 
-	console.log(tags);
-
 	var e01 = document.createElement('div');
 	e01.className = 'pos-f-t';
 	container.appendChild(e01);
@@ -218,9 +216,9 @@ function generateTagFilters(data, container){
 	fill.style = 'border:1px solid black; padding:4px; margin:2px; cursor:pointer; text-align:center; color:black; float:left'
 	fill.textContent += 'Check All';
 	fill.onclick = function(){
-		checkboxes = document.getElementsByClassName('TagCheckbox');
-		console.log(checkboxes)
-		for(var i = 0, n = checkboxes.length; i<n; i++) {
+		showAllTags();
+		var checkboxes = document.getElementsByClassName('TagCheckbox');
+		for(var i = 0; i < checkboxes.length; i ++) {
 			checkboxes[i].checked = true;
 		}
 	}
@@ -231,9 +229,9 @@ function generateTagFilters(data, container){
 	clear.style = 'border:1px solid black; padding:4px; margin:2px; cursor:pointer; text-align:center; color:black; float:left'
 	clear.textContent += 'Uncheck All';
 	clear.onclick = function(){
-		checkboxes = document.getElementsByClassName('TagCheckbox');
-		console.log(checkboxes)
-		for(var i = 0, n = checkboxes.length; i<n; i++) {
+		hideAllTags();
+		var checkboxes = document.getElementsByClassName('TagCheckbox');
+		for(var i = 0; i < checkboxes.length; i ++) {
 			checkboxes[i].checked = false;
 		}
 	}
@@ -247,11 +245,12 @@ function generateTagFilters(data, container){
 		var checkbox = document.createElement('input');
 		checkbox.type = 'checkbox';
 		checkbox.checked = 'checked';
-		checkbox.name = d;
-		checkbox.value = d;
+		checkbox.name = d.replace(/\s/g, '');
+		checkbox.value = d.replace(/\s/g, '');
 		checkbox.id = d.replace(/\s/g, '');
 		checkbox.className = 'TagCheckbox'
-
+		checkbox.onchange = applyTagFilters;
+		
 		var label = document.createElement('label')
 		label.style.paddingLeft = '4px';
 		label.htmlFor = d.replace(/\s/g, '');
@@ -401,6 +400,36 @@ function toTop(){
 
 }
 
+function showAllTags(){
+	var cards = document.getElementsByClassName('card');
+	for(var i = 0; i < cards.length; i ++) {
+		cards[i].classList.remove('hidden');
+	}
+}
+
+function hideAllTags(){
+	var cards = document.getElementsByClassName('card');
+	for(var i = 0; i < cards.length; i ++) {
+		cards[i].classList.add('hidden');
+	}
+}
+
+function applyTagFilters(){
+	// show everything first
+	hideAllTags()
+
+	// then hide only those without the checkbox
+	var checkboxes = document.getElementsByClassName('TagCheckbox');
+	for(var i = 0; i < checkboxes.length; i ++) {
+		if (checkboxes[i].checked) {
+			cards = document.getElementsByClassName(checkboxes[i].name);
+			for(var j = 0; j < cards.length; j ++) {
+				cards[j].classList.remove('hidden');
+			}
+		}
+	}
+
+}
 // call the function (on page load)		
 readJSONFromURL('https://scottcoughlin2014.github.io/quest-software-documentation/module.json', createPage)
 
