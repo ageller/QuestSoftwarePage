@@ -218,11 +218,12 @@ function generateSearchBar(container){
 	//div.style = 'border: 1px solid rgba(0,0,0, 0.2); border-radius: 0.25rem; padding: 0.25rem 0.75rem';
 	div.style = 'cursor:default';
 	div.className = 'navbar-toggler';
+	div.style.width = '100%';
 
 	var label = document.createElement('label')
-	label.style = 'color:rgba(0,0,0, 0.5); font-size:1.25rem';
+	label.style = 'color:rgba(0,0,0, 0.5); font-size:1.25rem; padding-right:4px';
 	label.htmlFor = 'searchByName';
-	label.appendChild(document.createTextNode('Search software by name : '));
+	label.appendChild(document.createTextNode('Search software by name :'));
 
 	var input = document.createElement('input');
 	input.type = 'text';
