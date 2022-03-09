@@ -446,6 +446,11 @@ function createContainers(main){
 // call all the DOM generators
 //////////////////////////////////////////////////////
 function createPage(data){
+
+	//sort the data by software name
+	data.sort(function(a, b) {
+		return a.fields.name.toLowerCase().localeCompare(b.fields.name.toLowerCase());
+	})
 	console.log(data);
 
 	// create a "main" element that will hold all the page content
