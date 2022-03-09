@@ -28,8 +28,6 @@ function generateDropdown(component, container){
 		tags.push(d);
 	})
 
-
-
 	var e01 = document.createElement('div');
 	var className = 'card ' + component.fields.name.replace(/\s/g, '');
 	tags.forEach(function(d){
@@ -224,7 +222,7 @@ function generateSearchBar(container){
 	var label = document.createElement('label')
 	label.style = 'color:rgba(0,0,0, 0.5); font-size:1.25rem';
 	label.htmlFor = 'searchByName';
-	label.appendChild(document.createTextNode('Search software by name'));
+	label.appendChild(document.createTextNode('Search software by name : '));
 
 	var input = document.createElement('input');
 	input.type = 'text';
@@ -250,6 +248,9 @@ function generateTagFilters(data, container){
 			if (!tags.includes(d)) tags.push(d);
 		})
 	})
+	tags.sort(function (a, b) {
+		return a.toLowerCase().localeCompare(b.toLowerCase());
+	});
 
 	var e01 = document.createElement('div');
 	e01.className = 'pos-f-t';
