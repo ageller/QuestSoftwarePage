@@ -62,8 +62,9 @@ html, body {
 }
 
 .labelFont{
-	padding-left: 4px;
+	margin-left: 1em;
 	color:  #4e2a84;
 	font:  1rem "Akkurat Pro Regular",sans-serif;
-	display: inline;
+	display: block;
+	text-indent: -1em;
 }

@@ -335,13 +335,15 @@ function generateTagFilters(data, container){
 		checkbox.id = d.replace(/\s/g, '');
 		checkbox.className = 'TagCheckbox'
 		checkbox.onchange = applyAllFilters;
+		checkbox.style.marginRight = '4px';
 		
 		var label = document.createElement('label')
 		label.classList.add('labelFont')
 		label.htmlFor = d.replace(/\s/g, '');
+		label.appendChild(checkbox)
 		label.appendChild(document.createTextNode(d));
 
-		div.appendChild(checkbox);
+		//div.appendChild(checkbox);
 		div.appendChild(label);
 		tagContainer.appendChild(div)
 	})
