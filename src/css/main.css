@@ -65,4 +65,5 @@ html, body {
 	padding-left: 4px;
 	color:  #4e2a84;
 	font:  1rem "Akkurat Pro Regular",sans-serif;
+	display: inline;
 }

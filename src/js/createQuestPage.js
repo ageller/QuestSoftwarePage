@@ -326,6 +326,7 @@ function generateTagFilters(data, container){
 	tags.forEach(function(d){
 		var div = document.createElement('div');
 		div.style.width = '100%'
+		div.style.marginBottom = '4px'
 		var checkbox = document.createElement('input');
 		checkbox.type = 'checkbox';
 		checkbox.checked = false;
