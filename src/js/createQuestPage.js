@@ -230,6 +230,7 @@ function generateSearchBar(container){
 	input.placeholder = 'Enter software name';
 	input.name = 'searchByName';
 	input.id = 'searchByName';
+	input.style.width = '200px';
 	input.addEventListener('input', applyAllFilters);
 	input.addEventListener('propertychange', applyAllFilters);
 
