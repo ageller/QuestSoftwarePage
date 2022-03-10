@@ -356,9 +356,9 @@ function createHeader(main){
 	// e01.id = 'top';
 	// header.appendChild(e01);
 
-	var e02 = document.createElement('h1');
-	e02.textContent += 'Software on Quest';
-	header.appendChild(e02);
+	// var e02 = document.createElement('h1');
+	// e02.textContent += 'Software on Quest';
+	// header.appendChild(e02);
 
 	var e03 = document.createElement('p');
 	e03.innerHTML = 'Below is a list of current software available on Quest.  On the left are various options filtering the list.  The software and applications shown on the right will be modified based on the selected filters.  Click on any of the items in the software and applications list to expand a dropdown and view more details.  <br><br> Please note that this Quest software and applications list is subject to change, and additional software not listed here may be available. For the complete list, please log into Quest and run the command, <span class="command">module available</span>. Except where noted, the <a href="https://kb.northwestern.edu/70718">Modules Software Environment Manager</a> must be used to set up your environment to use the Quest software. '
