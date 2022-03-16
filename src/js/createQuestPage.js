@@ -29,12 +29,12 @@ function generateDropdown(component, container){
 	})
 
 	var e01 = document.createElement('div');
-	var className = 'card ' + component.fields.name.replace(/\s/g, '');
+	var className = 'card ' + cleanString(component.fields.name);
 	tags.forEach(function(d){
-		className += ' ' + d.replace(/\s/g, '');
+		className += ' ' + cleanString(d)
 	})
 	e01.className = className;
-	e01.id = component.fields.name.replace(/\s/g, '');
+	e01.id = cleanString(component.fields.name);
 	container.appendChild(e01);
 
 	var e02 = document.createElement('div');
@@ -222,14 +222,18 @@ function generateSearchBar(container){
 
 	var label = document.createElement('label')
 	label.style = 'color:rgba(0,0,0, 0.5); font-size:1.25rem; padding-right:4px';
-	label.htmlFor = 'searchByName';
-	label.appendChild(document.createTextNode('Search software by name :'));
+	label.htmlFor = 'searchByKeyword';
+	label.appendChild(document.createTextNode('Search software by keyword'));
+	var addition = document.createElement('div');
+	addition.style = 'font-size:0.75rem';
+	addition.textContent += '(separate multiple keywords by commas)'
+	label.appendChild(addition);
 
 	var input = document.createElement('input');
 	input.type = 'text';
-	input.placeholder = 'Enter software name';
-	input.name = 'searchByName';
-	input.id = 'searchByName';
+	input.placeholder = 'Enter keyword';
+	input.name = 'searchByKeyword';
+	input.id = 'searchByKeyword';
 	input.style.width = '200px';
 	input.addEventListener('input', applyAllFilters);
 	input.addEventListener('propertychange', applyAllFilters);
@@ -246,9 +250,9 @@ function generateTagFilters(data, container){
 		d.fields.primary_keywords.forEach(function(d){
 			if (!tags.includes(d)) tags.push(d);
 		})
-		d.fields.secondary_keywords.forEach(function(d){
-			if (!tags.includes(d)) tags.push(d);
-		})
+		// d.fields.secondary_keywords.forEach(function(d){
+		// 	if (!tags.includes(d)) tags.push(d);
+		// })
 	})
 	tags.sort(function (a, b) {
 		return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -318,6 +322,7 @@ function generateTagFilters(data, container){
 	clear.onclick = function(){
 		uncheckAllBoxes();
 		showAllCards();
+		applyAllFilters();
 	}
 	div.appendChild(clear);
 
@@ -330,16 +335,16 @@ function generateTagFilters(data, container){
 		var checkbox = document.createElement('input');
 		checkbox.type = 'checkbox';
 		checkbox.checked = false;
-		checkbox.name = d.replace(/\s/g, '');
-		checkbox.value = d.replace(/\s/g, '');
-		checkbox.id = d.replace(/\s/g, '');
+		checkbox.name = cleanString(d);
+		checkbox.value = cleanString(d);
+		checkbox.id = cleanString(d);
 		checkbox.className = 'TagCheckbox'
 		checkbox.onchange = applyAllFilters;
 		checkbox.style.marginRight = '4px';
 		
 		var label = document.createElement('label')
 		label.classList.add('labelFont')
-		label.htmlFor = d.replace(/\s/g, '');
+		label.htmlFor = cleanString(d);
 		label.appendChild(checkbox)
 		label.appendChild(document.createTextNode(d));
 
@@ -355,13 +360,13 @@ function createHeader(main){
 	header.id = 'headerInfo'
 	main.appendChild(header);
 
-	// var e01 = document.createElement('a');
-	// e01.id = 'top';
-	// header.appendChild(e01);
+	var e01 = document.createElement('a');
+	e01.id = 'top';
+	header.appendChild(e01);
 
-	// var e02 = document.createElement('h1');
-	// e02.textContent += 'Software on Quest';
-	// header.appendChild(e02);
+	var e02 = document.createElement('h1');
+	e02.textContent += 'Software on Quest';
+	header.appendChild(e02);
 
 	var e03 = document.createElement('p');
 	e03.innerHTML = 'Below is a list of current software available on Quest.  On the left are various options filtering the list.  The software and applications shown on the right will be modified based on the selected filters.  Click on any of the items in the software and applications list to expand a dropdown and view more details.  <br><br> Please note that this Quest software and applications list is subject to change, and additional software not listed here may be available. For the complete list, please log into Quest and run the command, <span class="command">module available</span>. Except where noted, the <a href="https://kb.northwestern.edu/70718">Modules Software Environment Manager</a> must be used to set up your environment to use the Quest software. '
@@ -462,7 +467,7 @@ function createPage(data){
 	document.body.appendChild(main);
 
 	// add the header information (above all the dropdowns)
-	createHeader(main);
+	//createHeader(main);
 
 	// create the container for the dropdowns
 	var containers = createContainers(main);
@@ -492,7 +497,7 @@ function createPage(data){
 //////////////////////////////////////////////////////
 function clearAllFilters(){
 	// clear the search box
-	document.getElementById('searchByName').value = '';
+	document.getElementById('searchByKeyword').value = '';
 
 	// check all the boxes
 	uncheckAllBoxes();
@@ -520,8 +525,6 @@ function showAllCards(){
 	for(var i = 0; i < cards.length; i ++) {
 		cards[i].classList.remove('hidden');
 	}
-
-	applyNameSearch();
 }
 
 function hideAllCards(){
@@ -531,7 +534,8 @@ function hideAllCards(){
 	}
 }
 
-function applyTagFilters(){
+
+function applyAllFilters(){
 	// hide everything first
 	hideAllCards()
 
@@ -544,36 +548,29 @@ function applyTagFilters(){
 		}
 	}
 
-	// then show only those that have all the tags the checkbox
+	// get the text box entry
+	var search = document.getElementById('searchByKeyword');
+	//var keyword = cleanString(search.value);
+	var keywords = search.value.split(',');
+
+	// then go through the cards 1 by one to see which should be shown
 	cards = document.getElementsByClassName('card');
 	for(var i = 0; i < cards.length; i ++) {
 		var show = true;
+		// check the tags
 		for(var j = 0; j < tags.length; j ++) {
 			if (!cards[i].classList.contains(tags[j])) show = false;
 		}
+		// check the keyword
+		if (keywords.length > 0 && show){
+			for(var j = 0; j < keywords.length; j ++) {
+				if (!cards[i].className.includes(cleanString(keywords[j]))) show = false
+			}
+		}
+
 		if (show) cards[i].classList.remove('hidden');
 	}
-}
 
-function applyNameSearch(){
-	// get the text box entry
-	var search = document.getElementById('searchByName');
-	var value = search.value.replace(/[^0-9a-z]/gi, '').toLowerCase();
-	console.log(value);
-
-	if (value.length > 0){
-		// modify the cards
-		var cards = document.getElementsByClassName('card');
-		for(var i = 0; i < cards.length; i ++) {
-			var snip = cards[i].id.replace(/[^0-9a-z]/gi, '').toLowerCase().substring(0,value.length);
-			if (snip != value) cards[i].classList.add('hidden')
-		}
-	}
-}
-
-function applyAllFilters(){
-	applyTagFilters();
-	applyNameSearch();
 }
 
 //////////////////////////////////////////////////////
@@ -599,6 +596,10 @@ function toTop(){
 
 }
 
+function cleanString(d){
+	return d.replace(/[^0-9a-z]/gi, '').toLowerCase();
+	//return d.replace(/\s/g, '')
+}
 //////////////////////////////////////////////////////
 // runs on page load	
 //////////////////////////////////////////////////////
